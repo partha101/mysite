@@ -11,10 +11,11 @@
         text: <input type="text" name="handle" value=""><br>
         text: <input type="text" name="handle2" value=""><br>
         <input type="submit" value="Submit">
+        <span></span>
     </form>
     {% if flag %}
-    <div class="popup" action="{% url 'index' %}">Click me!
-        <span class="popuptext" id="myPopup">Popup text...</span>
+    <div class="popup" action="{% url 'index' %}">Not a valid Location or not scaled to the map.Click me!
+        <span class="popuptext" id="myPopup">Not a valid location</span>
     </div>
     {% endif %}
   </body>

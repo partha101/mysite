@@ -2,6 +2,53 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.template import loader
 from django.urls import reverse
+import pickle
+import osmnx as ox
+import folium
+import geopy
+import geopandas
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.geocoders import Nominatim
+import networkx as nx
+graph = pickle.load(open('D:/graph.pickle','rb'))
+# graph = pickle.load(open('D:/riverside_graph.pickle','rb'))
+
+
+def test(source,destination):
+    locator = Nominatim(user_agent="myGeocoder")
+    location = locator.geocode(source)
+    sx=location.latitude
+    sy = location.longitude
+    loca = locator.geocode(destination)
+    ex = loca.latitude
+    ey = loca.longitude
+    # return [sx,sy,ex,ey]
+    orig_node = ox.nearest_nodes(graph, sx,sy)
+    dest_node = ox.nearest_nodes(graph, ex,ey)
+
+    shortest_route = nx.shortest_path(graph,
+                                  orig_node,
+                                  dest_node,
+                                  weight='time')
+    return shortest_route
+
+def alternate_test(graph,source, destination):
+    graph = ox.speed.add_edge_speeds(graph)
+    graph = ox.speed.add_edge_travel_times(graph)
+    locator = Nominatim(user_agent="myGeocoder")
+    location = locator.geocode(source)
+    sx=location.latitude
+    sy = location.longitude
+    loca = locator.geocode(destination)
+    ex = loca.latitude
+    ey = loca.longitude
+    orig_node = ox.nearest_nodes(graph, sx,sy)
+    dest_node = ox.nearest_nodes(graph, ex,ey)
+    route = ox.shortest_path(graph, orig_node, dest_node, weight="travel_time")
+    return route
+
+def hello():
+    return test('Belmont, United States','Midwood, United States')
 
 from django.shortcuts import get_object_or_404, render
 
@@ -29,21 +76,40 @@ def show(request):
     list = [request.POST.get("handle", None),request.POST.get("handle2", None)]
     input1 = list[0]
     input2 = list[1]
+    flag = 0
+    alphabet_list = []
+    for i in range(97,123):
+        alphabet_list.append(i)
+    for i in range(65,91):
+        alphabet_list.append(i)
+    alphabet_list.append(32)
+    alphabet_list.append(44)
 
-    if (',' in input1 and ',' in input2):
-        A = input1.split(',')
-        X1,Y1 = A[0],A[1]
-        B = input2.split(',')
-        X2,Y2 = B[0],B[1]
-    if (isfloat(X1) and isfloat(Y1) and isfloat(X2) and isfloat(Y2)):
-        X1,Y1,X2,Y2 = float(X1),float(Y1),float(X2),float(Y2)
+    for i in input1:
+        if ord(i) not in alphabet_list:
+            flag = 1
+            break
+    for i in input2:
+        if ord(i) not in alphabet_list:
+            flag = 1
+            break
 
-        graph_path = "maps/test.osm"
-        G = ox.graph_from_xml(graph_path, retain_all=True)
-        orig = ox.distance.nearest_nodes(G, X=X1 , Y=Y1)
-        dest = ox.distance.nearest_nodes(G, X =X2 , Y=Y2)
-        route = nx.shortest_path(G, orig, dest)
-        m2 = ox.plot_route_folium(G, route, color = 'red', dashed_array = 5)
+    if (flag==0):
+
+        # graph_path = "maps/test.osm"
+        # G = ox.graph_from_xml(graph_path, retain_all=True)
+        # orig = ox.distance.nearest_nodes(G, X=X1 , Y=Y1)
+        # dest = ox.distance.nearest_nodes(G, X =X2 , Y=Y2)
+        # route = nx.shortest_path(G, orig, dest)
+        # url = "http://127.0.0.1:5000/xyz?handle="+("%20".join(input1.split(' ')))+"&"+"handle2="+("%20".join(input2.split(' ')))
+        # save_places = {'source':input1, 'dest':input2}
+        # with open('D:/saved_places.json', 'w') as f:
+        #     json.dump(save_places, f)
+
+        route = test(input1, input2)
+        # route = hello()
+        # route = alternate_test(graph, input1, input2)
+        m2 = ox.plot_route_folium(graph, route, color = 'red', dashed_array = 5)
         filepath = "D:/route.html"
         m2.save(filepath)
         import shutil
@@ -52,4 +118,4 @@ def show(request):
         shutil.move('D:/route.html', 'D:/Spatial-Project/mysite/maps/templates/maps/route.html')
         return render(request, filepath, {})
     else:
-        return render(request, 'maps/index.html', {'list': list, 'flag':1})
+        return render(request, 'maps/index.html', {'list': list, 'flag':flag})
