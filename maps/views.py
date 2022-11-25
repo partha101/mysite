@@ -43,7 +43,7 @@ def show(request):
         orig = ox.distance.nearest_nodes(G, X=X1 , Y=Y1)
         dest = ox.distance.nearest_nodes(G, X =X2 , Y=Y2)
         route = nx.shortest_path(G, orig, dest)
-        m2 = ox.plot_route_folium(G, route, color = 'red', dashed_array = 10)
+        m2 = ox.plot_route_folium(G, route, color = 'red', dashed_array = 5)
         filepath = "D:/route.html"
         m2.save(filepath)
         import shutil
