@@ -11,7 +11,6 @@ from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
 import networkx as nx
 graph = pickle.load(open('D:/graph.pickle','rb'))
-# graph = pickle.load(open('D:/riverside_graph.pickle','rb'))
 
 
 def test(source,destination):
@@ -22,7 +21,6 @@ def test(source,destination):
     loca = locator.geocode(destination)
     ex = loca.latitude
     ey = loca.longitude
-    # return [sx,sy,ex,ey]
     orig_node = ox.nearest_nodes(graph, sx,sy)
     dest_node = ox.nearest_nodes(graph, ex,ey)
 
@@ -96,30 +94,32 @@ def show(request):
 
     if (flag==0):
 
-        # graph_path = "maps/test.osm"
-        # G = ox.graph_from_xml(graph_path, retain_all=True)
-        # orig = ox.distance.nearest_nodes(G, X=X1 , Y=Y1)
-        # dest = ox.distance.nearest_nodes(G, X =X2 , Y=Y2)
-        # route = nx.shortest_path(G, orig, dest)
-        # url = "http://127.0.0.1:5000/xyz?handle="+("%20".join(input1.split(' ')))+"&"+"handle2="+("%20".join(input2.split(' ')))
-        # save_places = {'source':input1, 'dest':input2}
-        # with open('D:/saved_places.json', 'w') as f:
-        #     json.dump(save_places, f)
-
-        route = test(input1, input2)
-        # route = hello()
-        # route = alternate_test(graph, input1, input2)
+        route = alternate_test(graph, input1, input2)
         m2 = ox.plot_route_folium(graph, route, color = 'red', dashed_array = 5)
         filepath = "D:/route.html"
         m2.save(filepath)
-        import shutil
 
-        filepath = 'maps/route.html'
-        shutil.move('D:/route.html', 'D:/Spatial-Project/mysite/maps/templates/maps/route.html')
+        # open both files
+        with open(filepath,'r') as firstfile, open('maps/route.html','w') as secondfile:
+	        # read content from first file
+            for line in firstfile:
+		        # append content to second file
+                secondfile.write(line)
+
         return render(request, 'maps/show.html', {'source':input1, 'dest':input2})
     else:
         return render(request, 'maps/index.html', {'list': list, 'flag':flag})
 
 def route(request):
-    return render(request,'maps/route.html')
+    return render(request, 'maps/route.html')
+
+
+# source = "Bronx, New York"
+# dest = "Queens, New York"
+# route = alternate_test(graph, source, dest)
+# new_graph = graph.subgraph(route)
+# if (new_graph.edges) :
+#     print("route has edges")
+# else :
+#     print("Doesn't have")
 
