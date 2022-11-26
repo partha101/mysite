@@ -116,6 +116,10 @@ def show(request):
 
         filepath = 'maps/route.html'
         shutil.move('D:/route.html', 'D:/Spatial-Project/mysite/maps/templates/maps/route.html')
-        return render(request, filepath, {})
+        return render(request, 'maps/show.html', {'source':input1, 'dest':input2})
     else:
         return render(request, 'maps/index.html', {'list': list, 'flag':flag})
+
+def route(request):
+    return render(request,'maps/route.html')
+
