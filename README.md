@@ -17,7 +17,7 @@
 
 * Create a virtual environment in the directory you want to work on. [Here](https://docs.python.org/3/tutorial/venv.html) is a tutorial on how to use python venv to create virutal environments.
 * Now make a folder for your spatial project inside your current directory.
-* Clone the repository using the command (make sure you have git installed):
+* Clone the repository using the command (make sure you have git installed). If not install git by following [this](https://git-scm.com/).
 > `git clone https://github.com/partha101/mysite.git`
 * Run the following pip command to install the required packages
 > `pip install -r requirements.txt`
