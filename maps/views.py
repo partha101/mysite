@@ -23,6 +23,10 @@ def test(source,destination):
     ey = loca.longitude
     orig_node = ox.nearest_nodes(graph, sy,sx)
     dest_node = ox.nearest_nodes(graph, ey,ex)
+    for i in hotspots:
+        if i==orig_node or i==dest_node:
+            continue
+        graph.remove_node(i)
     shortest_route = nx.shortest_path(graph,
                                   orig_node,
                                   dest_node,
