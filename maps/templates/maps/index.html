@@ -8,8 +8,8 @@
   <body>
     <form action="{% url 'show' %}" method="post">
         {% csrf_token %}
-        text: <input type="text" name="handle" value=""><br>
-        text: <input type="text" name="handle2" value=""><br>
+        Source: <input type="text" name="handle" value=""><br>
+        Destination: <input type="text" name="handle2" value=""><br>
         <input type="submit" value="Submit">
         <span></span>
     </form>
