@@ -25,9 +25,9 @@ SECRET_KEY = "django-insecure-dvjs&w!13b2@q%my(uq#2+6%**e+-(2uf_3l7n^e5jb&j^h*^=
 GOOGLE_MAPS_API_KEY = "AIzaSyA5aqzK82D51V4nDMYfSflWbk3DZr7kN3s"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
