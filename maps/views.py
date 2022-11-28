@@ -1,18 +1,18 @@
-from django.http import HttpResponse, HttpResponseRedirect
+# from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
-from django.template import loader
+# from django.template import loader
 from django.urls import reverse
 import pickle
 import osmnx as ox
+import time
 import folium
-import geopy
-import geopandas
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
 import networkx as nx
-graph = pickle.load(open('D:/graph.pickle','rb'))
+graph = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
+hotspots = pickle.load(open('./maps/templates/maps/Hotspots.pickle','rb'))
 
-
+## Your code starts here ##
 def test(source,destination):
     locator = Nominatim(user_agent="myGeocoder")
     location = locator.geocode(source)
@@ -21,34 +21,16 @@ def test(source,destination):
     loca = locator.geocode(destination)
     ex = loca.latitude
     ey = loca.longitude
-    orig_node = ox.nearest_nodes(graph, sx,sy)
-    dest_node = ox.nearest_nodes(graph, ex,ey)
-
+    orig_node = ox.nearest_nodes(graph, sy,sx)
+    dest_node = ox.nearest_nodes(graph, ey,ex)
     shortest_route = nx.shortest_path(graph,
                                   orig_node,
                                   dest_node,
                                   weight='time')
     return shortest_route
+## Your code ends here ##
 
-def alternate_test(graph,source, destination):
-    graph = ox.speed.add_edge_speeds(graph)
-    graph = ox.speed.add_edge_travel_times(graph)
-    locator = Nominatim(user_agent="myGeocoder")
-    location = locator.geocode(source)
-    sx=location.latitude
-    sy = location.longitude
-    loca = locator.geocode(destination)
-    ex = loca.latitude
-    ey = loca.longitude
-    orig_node = ox.nearest_nodes(graph, sx,sy)
-    dest_node = ox.nearest_nodes(graph, ex,ey)
-    route = ox.shortest_path(graph, orig_node, dest_node, weight="travel_time")
-    return route
-
-def hello():
-    return test('Belmont, United States','Midwood, United States')
-
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 
 def isfloat(num):
     try:
@@ -67,7 +49,6 @@ def show(request):
     try:
         import osmnx as ox
         import networkx as nx
-        from IPython.display import IFrame
     except:
         raise Http404("Failed to import modules")
 
@@ -93,33 +74,30 @@ def show(request):
             break
 
     if (flag==0):
-
-        route = alternate_test(graph, input1, input2)
-        m2 = ox.plot_route_folium(graph, route, color = 'red', dashed_array = 5)
-        filepath = "D:/route.html"
+        ## Your code starts here ##
+        path = test(input1, input2)
+        routes = []
+        for i in hotspots:
+            routes.append([i])
+        routes.append(path)
+        m2 = ox.folium.plot_route_folium(graph, path, tiles='openstreetmap')
+        for i in hotspots:
+            ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='red') ).add_to(m2)
+        filepath = "./route.html"
         m2.save(filepath)
+        ## Your code ends here ##
 
         # open both files
-        with open(filepath,'r') as firstfile, open('maps/route.html','w') as secondfile:
+        with open(filepath,'r') as firstfile, open('./maps/templates/maps/route.html','w') as secondfile:
 	        # read content from first file
             for line in firstfile:
 		        # append content to second file
                 secondfile.write(line)
 
+        time.sleep(5)
         return render(request, 'maps/show.html', {'source':input1, 'dest':input2})
     else:
         return render(request, 'maps/index.html', {'list': list, 'flag':flag})
 
 def route(request):
     return render(request, 'maps/route.html')
-
-
-# source = "Bronx, New York"
-# dest = "Queens, New York"
-# route = alternate_test(graph, source, dest)
-# new_graph = graph.subgraph(route)
-# if (new_graph.edges) :
-#     print("route has edges")
-# else :
-#     print("Doesn't have")
-
