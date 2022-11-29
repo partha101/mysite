@@ -10,6 +10,7 @@ from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
 import networkx as nx
 graph = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
+graph2 = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
 hotspots = pickle.load(open('./maps/templates/maps/Hotspots.pickle','rb'))
 hotspots2 = pickle.load(open('./maps/templates/maps/Hotspots2.pickle','rb'))
 
@@ -22,13 +23,13 @@ def test(source,destination):
     loca = locator.geocode(destination)
     ex = loca.latitude
     ey = loca.longitude
-    orig_node = ox.nearest_nodes(graph, sy,sx)
-    dest_node = ox.nearest_nodes(graph, ey,ex)
+    orig_node = ox.nearest_nodes(graph2, sy,sx)
+    dest_node = ox.nearest_nodes(graph2, ey,ex)
     for i in hotspots:
         if i==orig_node or i==dest_node:
             continue
-        graph.remove_node(i)
-    shortest_route = nx.shortest_path(graph,
+        graph2.remove_node(i)
+    shortest_route = nx.shortest_path(graph2,
                                   orig_node,
                                   dest_node,
                                   weight='time')
