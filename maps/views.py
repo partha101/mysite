@@ -11,6 +11,7 @@ from geopy.geocoders import Nominatim
 import networkx as nx
 graph = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
 hotspots = pickle.load(open('./maps/templates/maps/Hotspots.pickle','rb'))
+hotspots2 = pickle.load(open('./maps/templates/maps/Hotspots2.pickle','rb'))
 
 ## Your code starts here ##
 def test(source,destination):
@@ -87,6 +88,8 @@ def show(request):
         m2 = ox.folium.plot_route_folium(graph, path, tiles='openstreetmap')
         for i in hotspots:
             ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='red') ).add_to(m2)
+	for i in hotspots2:
+            ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='green') ).add_to(m2)
         filepath = "./route.html"
         m2.save(filepath)
         ## Your code ends here ##
