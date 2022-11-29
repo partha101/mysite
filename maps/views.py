@@ -14,8 +14,6 @@ graph2 = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
 hotspots = pickle.load(open('./maps/templates/maps/Hotspots.pickle','rb'))
 hotspots2 = pickle.load(open('./maps/templates/maps/Hotspots2.pickle','rb'))
 
-
-##Application Logic
 ## Your code starts here ##
 def test(source,destination):
     locator = Nominatim(user_agent="myGeocoder")
@@ -47,9 +45,6 @@ def isfloat(num):
     except ValueError:
         return False
 
-
-
-## Views logics
 # index returns the default page for the maps app
 def index(request):
     return render(request, 'maps/index.html', {})
