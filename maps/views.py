@@ -14,27 +14,18 @@ graph2 = pickle.load(open('./maps/templates/maps/Brooklyn_Graph.pickle','rb'))
 hotspots = pickle.load(open('./maps/templates/maps/Hotspots.pickle','rb'))
 hotspots2 = pickle.load(open('./maps/templates/maps/Hotspots2.pickle','rb'))
 
-## Your code starts here ##
+## Backend code starts here ##
 def test(source,destination):
-    locator = Nominatim(user_agent="myGeocoder")
-    location = locator.geocode(source)
-    sx=location.latitude
-    sy = location.longitude
-    loca = locator.geocode(destination)
-    ex = loca.latitude
-    ey = loca.longitude
-    orig_node = ox.nearest_nodes(graph2, sy,sx)
-    dest_node = ox.nearest_nodes(graph2, ey,ex)
     for i in hotspots:
-        if i==orig_node or i==dest_node:
+        if i==source or i==destination:
             continue
         graph2.remove_node(i)
     shortest_route = nx.shortest_path(graph2,
-                                  orig_node,
-                                  dest_node,
+                                  source,
+                                  destination,
                                   weight='time')
     return shortest_route
-## Your code ends here ##
+## Backend code ends here ##
 
 from django.shortcuts import render
 
@@ -80,20 +71,31 @@ def show(request):
             break
 
     if (flag==0):
-        ## Your code starts here ##
-        path = test(input1, input2)
+        ## Backend code starts here ##
+        locator = Nominatim(user_agent="myGeocoder")
+        location = locator.geocode(input1)
+        sx=location.latitude
+        sy = location.longitude
+        loca = locator.geocode(input2)
+        ex = loca.latitude
+        ey = loca.longitude
+        orig_node = ox.nearest_nodes(graph2, sy,sx)
+        dest_node = ox.nearest_nodes(graph2, ey,ex)
+        path = test(orig_node, dest_node)
         routes = []
         for i in hotspots:
             routes.append([i])
         routes.append(path)
         m2 = ox.folium.plot_route_folium(graph, path, tiles='openstreetmap')
+        ox.folium.folium.Marker(location = [graph.nodes[orig_node]['y'],graph.nodes[orig_node]['x']], icon = folium.Icon(color='darkpurple') ).add_to(m2)
+        ox.folium.folium.Marker(location = [graph.nodes[dest_node]['y'],graph.nodes[dest_node]['x']], icon = folium.Icon(color='darkpurple') ).add_to(m2)
         for i in hotspots:
             ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='red') ).add_to(m2)
         for i in hotspots2:
             ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='green') ).add_to(m2)
         filepath = "./route.html"
         m2.save(filepath)
-        ## Your code ends here ##
+        ## Backend code ends here ##
 
         # open both files
         with open(filepath,'r') as firstfile, open('./maps/templates/maps/route.html','w') as secondfile:
