@@ -4,12 +4,41 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
+    <style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+</style>
   </head>
-  <body>
+  <body bgcolor="#F8F8F">
+  <h1 style="color:purple;">Safe Route in Brooklyn, NewYork City, United States</h1>
+  <div class="container">
     <form action="{% url 'show' %}" method="post">
         {% csrf_token %}
-        Source: <input type="text" name="handle" value=""><br>
-        Destination: <input type="text" name="handle2" value=""><br>
+        <h4><label style="color:blue">Source:</label></h4>
+        <input type="text" name="handle" placeholder="Source address">
+        
+        <h4><label style="color:blue">Destination:</label></h4>
+        <input type="text" name="handle2" placeholder="Destination address">
+        
         <input type="submit" value="Submit">
         <span></span>
     </form>
@@ -18,5 +47,6 @@
         <span class="popuptext" id="myPopup">Not a valid location</span>
     </div>
     {% endif %}
+  </div>
   </body>
 </html>
