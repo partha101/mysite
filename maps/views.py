@@ -89,7 +89,7 @@ def show(request):
         m2 = ox.folium.plot_route_folium(graph, path, tiles='openstreetmap')
         for i in hotspots:
             ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='red') ).add_to(m2)
-	for i in hotspots2:
+        for i in hotspots2:
             ox.folium.folium.Marker(location = [graph.nodes[i]['y'],graph.nodes[i]['x']], icon = folium.Icon(color='green') ).add_to(m2)
         filepath = "./route.html"
         m2.save(filepath)
